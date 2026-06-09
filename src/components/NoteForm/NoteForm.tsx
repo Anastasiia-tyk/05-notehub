@@ -1,13 +1,13 @@
 // src/components/NoteForm/NoteForm.tsx
 
 import { useId } from "react";
-import { Formik, Form, ErrorMessage } from "formik";
+import { Formik, Form, ErrorMessage, Field } from "formik";
 import type { FormikHelpers } from "formik";
 import * as Yup from "yup";
 
 import css from "./NoteForm.module.css";
 
-interface NoteFormValues {
+export interface NoteFormValues {
     title: string;
     content: string;
     tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
@@ -32,39 +32,32 @@ const NoteFormSchema = Yup.object().shape({
 });
 
 interface NoteFormProps {
-    onClose: () => void;
+    onSubmit: (values: NoteFormValues, actions: FormikHelpers<NoteFormValues>) => void;
+    onCancel: () => void;
 }
 
-export default function NoteForm({ onClose }: NoteFormProps) {
+export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
     const fieldId = useId();
-
-    const handleSubmit = (
-        values: NoteFormValues,
-        actions: FormikHelpers<NoteFormValues>
-    ) => {
-        console.log(values);
-        actions.resetForm();
-        onClose();
-    }
 
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={NoteFormSchema}
-            onSubmit={handleSubmit}
+            onSubmit={onSubmit}
         >
             <Form className={css.form}>
                 <div className={css.formGroup}>
                     <label htmlFor={`${fieldId}-title`}>Title</label>
-                    <input id={`${fieldId}-title`} type="text" name="title" className={css.input} />
+                    <Field id={`${fieldId}-title`} type="text" name="title" className={css.input} />
                     <ErrorMessage component="span" name="title" className={css.error} />
                 </div>
 
                 <div className={css.formGroup}>
                     <label htmlFor={`${fieldId}-content`}>Content</label>
-                    <textarea
+                    <Field
                         id={`${fieldId}-content`}
                         name="content"
+                        as="textarea"
                         rows={8}
                         className={css.textarea}
                     />
@@ -73,18 +66,18 @@ export default function NoteForm({ onClose }: NoteFormProps) {
 
                 <div className={css.formGroup}>
                     <label htmlFor={`${fieldId}-tag`}>Tag</label>
-                    <select id={`${fieldId}-tag`} name="tag" className={css.select}>
+                    <Field id={`${fieldId}-tag`} name="tag" as="select" className={css.select}>
                         <option value="Todo">Todo</option>
                         <option value="Work">Work</option>
                         <option value="Personal">Personal</option>
                         <option value="Meeting">Meeting</option>
                         <option value="Shopping">Shopping</option>
-                    </select>
+                    </Field>
                     <ErrorMessage component="span" name="tag" className={css.error} />
                 </div>
 
                 <div className={css.actions}>
-                    <button type="button" className={css.cancelButton} onClick={onClose}>
+                    <button type="button" className={css.cancelButton} onClick={onCancel}>
                         Cancel
                     </button>
                     <button
