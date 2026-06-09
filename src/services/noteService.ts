@@ -8,7 +8,7 @@ interface NoteHttpResponse {
     total_pages: number;
 }
 
-export const fetchNotes = async (page: number = 1, perPage: number = 12, search: "") => {
+export const fetchNotes = async (page: number = 1, perPage: number = 12, search: string = "") => {
     const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
     const response = await axios.get<NoteHttpResponse>(
