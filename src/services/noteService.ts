@@ -1,18 +1,26 @@
 // src/services/noteService.ts
 
 import axios from "axios";
-import type { Note } from '../types/note';
+import type { Note, NoteTag } from '../types/note';
 
-interface NoteHttpResponse {
-    results: Note[];
-    total_pages: number;
+export interface FetchNotesResponse {
+    notes: Note[];
+    totalPages: number;
 }
 
-export const fetchNotes = async (page: number = 1, perPage: number = 12, search: string = "") => {
+export interface CreateNoteInput {
+    title: string;
+    content: string;
+    tag: NoteTag;
+}
+
+const BASE_URL = "https://notehub-public.goit.study/api/notes";
+
+export const fetchNotes = async (page: number = 1, perPage: number = 12, search: string = ""): Promise<FetchNotesResponse> => {
     const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
-    const response = await axios.get<NoteHttpResponse>(
-        `https://notehub-public.goit.study/api/notes`,
+    const response = await axios.get<FetchNotesResponse>(
+        BASE_URL,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -27,11 +35,11 @@ export const fetchNotes = async (page: number = 1, perPage: number = 12, search:
     return response.data;
 };
 
-export const createNote = async (noteData: { title: string; content: string; tag: string }) => {
+export const createNote = async (noteData: CreateNoteInput): Promise<Note> => {
     const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
     const response = await axios.post<Note>(
-        `https://notehub-public.goit.study/api/notes`,
+        BASE_URL,
         noteData,
         {
             headers: {
@@ -42,11 +50,11 @@ export const createNote = async (noteData: { title: string; content: string; tag
     return response.data;
 };
 
-export const deleteNote = async (id: string) => {
+export const deleteNote = async (id: string): Promise<Note> => {
     const token = import.meta.env.VITE_NOTEHUB_TOKEN;
     
     const response = await axios.delete<Note>(
-        `https://notehub-public.goit.study/api/notes/${id}`,
+        `${BASE_URL}/${id}`,
         {
             headers: {
                 Authorization: `Bearer ${token}`
